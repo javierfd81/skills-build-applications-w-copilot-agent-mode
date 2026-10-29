@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getJson } from '../api/client.js';
-
 type Props = {
   title: string;
   description: string;
-  endpoint: string;
+  // Must be referentially stable (module-level) so the effect does not refetch on every render.
+  load: () => Promise<Record<string, unknown>>;
   responseKey: 'activities' | 'teams' | 'leaderboard' | 'suggestions';
   emptyMessage: string;
   renderItem: (item: Record<string, unknown>) => ReactNode;
@@ -14,7 +13,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export function CapabilityCard({ title, description, endpoint, responseKey, emptyMessage, renderItem }: Props) {
+export function CapabilityCard({ title, description, load, responseKey, emptyMessage, renderItem }: Props) {
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -23,7 +22,7 @@ export function CapabilityCard({ title, description, endpoint, responseKey, empt
     let active = true;
     setLoading(true);
     setError(undefined);
-    getJson<Record<string, unknown>>(endpoint)
+    load()
       .then((data) => {
         const responseItems = data[responseKey];
         if (!Array.isArray(responseItems) || !responseItems.every(isRecord)) {
@@ -38,7 +37,7 @@ export function CapabilityCard({ title, description, endpoint, responseKey, empt
         if (active) setLoading(false);
       });
     return () => { active = false; };
-  }, [endpoint, responseKey]);
+  }, [load, responseKey]);
 
   return <section className="card h-100">
     <div className="card-body">

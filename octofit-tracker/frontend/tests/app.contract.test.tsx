@@ -4,7 +4,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../src/App.js';
 
-// Renders App inside a MemoryRouter so each test can target a specific capability route.
 function renderRoute(route: string) {
   return render(<MemoryRouter initialEntries={[route]}><App /></MemoryRouter>);
 }
