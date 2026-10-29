@@ -30,13 +30,13 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 
 Record your plan here before editing code.
 
-- Presentation tier decision:
-- Logic tier decision:
-- Data tier decision:
-- Activity tracking approach:
-- Team management approach:
-- Leaderboard approach:
-- Workout suggestions approach:
+- Presentation tier decision: Use the shared API client and a reusable capability view with accessible loading, empty, and error states.
+- Logic tier decision: Keep request validation and domain behavior in explicit service functions; return deliberate 4xx responses for invalid or missing records.
+- Data tier decision: Enforce required fields in Mongoose schemas and retain the existing non-destructive, idempotent seed behavior.
+- Activity tracking approach: Validate IDs and positive minutes, require existing user/team records, and calculate points from minutes.
+- Team management approach: Require a name, accept optional member IDs, and persist the requested team fields.
+- Leaderboard approach: Sum persisted activity points per team and assign ranks after descending sort.
+- Workout suggestions approach: Match a user by email, prefer a matching goal then recent activity, and explain the selected focus.
 
 ## Test plan
 
@@ -47,3 +47,7 @@ Record the commands you run and what each failure means.
 - Frontend command: `npm test --prefix octofit-tracker/frontend`
 - Backend build command: `npm run build --prefix octofit-tracker/backend`
 - Frontend build command: `npm run build --prefix octofit-tracker/frontend`
+
+Initial contract-test results before implementation: data tests had 4 failures and 1 pass; API tests had 4 failures; frontend tests had 15 failures. The failures identified incomplete model validation, API behavior, and presentation states/data rendering, respectively.
+
+Final verification: both backend contract files passed (9 tests total), frontend tests passed (15 tests), and both backend and frontend builds passed. The test failures above are the pre-implementation baseline, not remaining failures.
